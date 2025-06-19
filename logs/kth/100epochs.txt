@@ -1,0 +1,456 @@
+DATCSTP(
+  (pe): PatchEmbed_CNN3D(
+    (net): Sequential(
+      (0): Conv3d(1, 64, kernel_size=(3, 3, 3), stride=(2, 2, 2), padding=(1, 1, 1), bias=False)
+      (1): GELU(approximate='none')
+      (2): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (3): Conv3d(64, 64, kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1), bias=False)
+      (4): GELU(approximate='none')
+      (5): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (6): Conv3d(64, 128, kernel_size=(1, 1, 1), stride=(1, 1, 1), bias=False)
+    )
+  )
+  (net): ModuleList(
+    (0-5): 6 x Block(
+      (drop_path): DropPath(drop_prob=0.200)
+      (satt): Attention(
+        (norm): LayerNorm()
+        (att): Sequential(
+          (0): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+          (1): GELU(approximate='none')
+          (2): Conv2d(128, 128, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=128)
+        )
+        (v): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+        (proj): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (tatt): Attention(
+        (norm): LayerNorm()
+        (att): Sequential(
+          (0): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+          (1): GELU(approximate='none')
+          (2): Conv2d(640, 640, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=640)
+        )
+        (v): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+        (proj): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (mlp): Mlp(
+        (norm): LayerNorm()
+        (fc1): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1))
+        (pos): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=256)
+        (fc2): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+        (act): GELU(approximate='none')
+      )
+    )
+  )
+  (pb): PatchEmbed_CNN3D(
+    (net): Sequential(
+      (0): ConvTranspose3d(128, 64, kernel_size=(1, 1, 1), stride=(1, 1, 1), bias=False)
+      (1): GELU(approximate='none')
+      (2): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (3): Conv3d(64, 64, kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1), bias=False)
+      (4): GELU(approximate='none')
+      (5): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (6): ConvTranspose3d(64, 1, kernel_size=(3, 3, 3), stride=(2, 2, 2), padding=(1, 1, 1), output_padding=(1, 1, 1), bias=False)
+    )
+  )
+)
+| module             | #parameters or shape   | #flops    |
+|:-------------------|:-----------------------|:----------|
+| model              | 8.58M                  | 51.079G   |
+|  pe.net            |  0.121M                |  2.481G   |
+|   pe.net.0         |   1.728K               |   35.389M |
+|    pe.net.0.weight |    (64, 1, 3, 3, 3)    |           |
+|   pe.net.2         |   0.128K               |   6.554M  |
+|    pe.net.2.weight |    (64,)               |           |
+|    pe.net.2.bias   |    (64,)               |           |
+|   pe.net.3         |   0.111M               |   2.265G  |
+|    pe.net.3.weight |    (64, 64, 3, 3, 3)   |           |
+|   pe.net.5         |   0.128K               |   6.554M  |
+|    pe.net.5.weight |    (64,)               |           |
+|    pe.net.5.bias   |    (64,)               |           |
+|   pe.net.6         |   8.192K               |   0.168G  |
+|    pe.net.6.weight |    (128, 64, 1, 1, 1)  |           |
+|  net               |  8.339M                |  46.116G  |
+|   net.0            |   1.39M                |   7.686G  |
+|    net.0.scale1    |    (128,)              |           |
+|    net.0.scale2    |    (640,)              |           |
+|    net.0.scale3    |    (128,)              |           |
+|    net.0.satt      |    56.192K             |    1.135G |
+|    net.0.tatt      |    1.264M              |    5.162G |
+|    net.0.mlp       |    68.736K             |    1.389G |
+|   net.1            |   1.39M                |   7.686G  |
+|    net.1.scale1    |    (128,)              |           |
+|    net.1.scale2    |    (640,)              |           |
+|    net.1.scale3    |    (128,)              |           |
+|    net.1.satt      |    56.192K             |    1.135G |
+|    net.1.tatt      |    1.264M              |    5.162G |
+|    net.1.mlp       |    68.736K             |    1.389G |
+|   net.2            |   1.39M                |   7.686G  |
+|    net.2.scale1    |    (128,)              |           |
+|    net.2.scale2    |    (640,)              |           |
+|    net.2.scale3    |    (128,)              |           |
+|    net.2.satt      |    56.192K             |    1.135G |
+|    net.2.tatt      |    1.264M              |    5.162G |
+|    net.2.mlp       |    68.736K             |    1.389G |
+|   net.3            |   1.39M                |   7.686G  |
+|    net.3.scale1    |    (128,)              |           |
+|    net.3.scale2    |    (640,)              |           |
+|    net.3.scale3    |    (128,)              |           |
+|    net.3.satt      |    56.192K             |    1.135G |
+|    net.3.tatt      |    1.264M              |    5.162G |
+|    net.3.mlp       |    68.736K             |    1.389G |
+|   net.4            |   1.39M                |   7.686G  |
+|    net.4.scale1    |    (128,)              |           |
+|    net.4.scale2    |    (640,)              |           |
+|    net.4.scale3    |    (128,)              |           |
+|    net.4.satt      |    56.192K             |    1.135G |
+|    net.4.tatt      |    1.264M              |    5.162G |
+|    net.4.mlp       |    68.736K             |    1.389G |
+|   net.5            |   1.39M                |   7.686G  |
+|    net.5.scale1    |    (128,)              |           |
+|    net.5.scale2    |    (640,)              |           |
+|    net.5.scale3    |    (128,)              |           |
+|    net.5.satt      |    56.192K             |    1.135G |
+|    net.5.tatt      |    1.264M              |    5.162G |
+|    net.5.mlp       |    68.736K             |    1.389G |
+|  pb.net            |  0.121M                |  2.481G   |
+|   pb.net.0         |   8.192K               |   0.168G  |
+|    pb.net.0.weight |    (128, 64, 1, 1, 1)  |           |
+|   pb.net.2         |   0.128K               |   6.554M  |
+|    pb.net.2.weight |    (64,)               |           |
+|    pb.net.2.bias   |    (64,)               |           |
+|   pb.net.3         |   0.111M               |   2.265G  |
+|    pb.net.3.weight |    (64, 64, 3, 3, 3)   |           |
+|   pb.net.5         |   0.128K               |   6.554M  |
+|    pb.net.5.weight |    (64,)               |           |
+|    pb.net.5.bias   |    (64,)               |           |
+|   pb.net.6         |   1.728K               |   35.389M |
+|    pb.net.6.weight |    (64, 1, 3, 3, 3)    |           |
+model params: 8580480
+model gflops: 51.0787584
+Epoch 1 | Loss : 1.543613 | Time : 166.9596
+Epoch 1 | Test Loss : 0.042284 | Time : 127.9593
+Epoch 1 | Test PSNR : 16.000270 | Test SSIM : 0.368627 | Time : 127.9593
+Best model saved with ssim 0.368627 at epoch 1
+Epoch 2 | Loss : 0.330514 | Time : 166.8023
+Epoch 2 | Test Loss : 0.010621 | Time : 126.5789
+Epoch 2 | Test PSNR : 20.584475 | Test SSIM : 0.584306 | Time : 126.5789
+Best model saved with ssim 0.584306 at epoch 2
+Epoch 3 | Loss : 0.153699 | Time : 166.8614
+Epoch 3 | Test Loss : 0.005312 | Time : 127.4936
+Epoch 3 | Test PSNR : 23.837193 | Test SSIM : 0.818156 | Time : 127.4936
+Best model saved with ssim 0.818156 at epoch 3
+Epoch 4 | Loss : 0.129620 | Time : 166.5917
+Epoch 4 | Test Loss : 0.004904 | Time : 127.4759
+Epoch 4 | Test PSNR : 24.289290 | Test SSIM : 0.826652 | Time : 127.4759
+Best model saved with ssim 0.826652 at epoch 4
+Epoch 5 | Loss : 0.117689 | Time : 166.7607
+Epoch 5 | Test Loss : 0.005928 | Time : 126.8005
+Epoch 5 | Test PSNR : 23.335353 | Test SSIM : 0.816009 | Time : 126.8005
+Epoch 6 | Loss : 0.103525 | Time : 166.7440
+Epoch 6 | Test Loss : 0.006188 | Time : 127.2012
+Epoch 6 | Test PSNR : 23.059476 | Test SSIM : 0.797408 | Time : 127.2013
+Epoch 7 | Loss : 0.094962 | Time : 166.9106
+Epoch 7 | Test Loss : 0.006936 | Time : 127.0217
+Epoch 7 | Test PSNR : 22.940609 | Test SSIM : 0.816393 | Time : 127.0217
+Epoch 8 | Loss : 0.087634 | Time : 166.9099
+Epoch 8 | Test Loss : 0.005576 | Time : 127.6948
+Epoch 8 | Test PSNR : 23.591156 | Test SSIM : 0.808323 | Time : 127.6948
+Epoch 9 | Loss : 0.082374 | Time : 166.9050
+Epoch 9 | Test Loss : 0.005727 | Time : 126.5357
+Epoch 9 | Test PSNR : 23.656392 | Test SSIM : 0.842170 | Time : 126.5357
+Best model saved with ssim 0.842170 at epoch 9
+Epoch 10 | Loss : 0.079717 | Time : 166.7410
+Epoch 10 | Test Loss : 0.007402 | Time : 127.7245
+Epoch 10 | Test PSNR : 22.736234 | Test SSIM : 0.833088 | Time : 127.7246
+Epoch 11 | Loss : 0.076399 | Time : 166.6249
+Epoch 11 | Test Loss : 0.004941 | Time : 125.7999
+Epoch 11 | Test PSNR : 24.329716 | Test SSIM : 0.844206 | Time : 125.7999
+Best model saved with ssim 0.844206 at epoch 11
+Epoch 12 | Loss : 0.075823 | Time : 166.6886
+Epoch 12 | Test Loss : 0.004386 | Time : 127.9145
+Epoch 12 | Test PSNR : 24.823907 | Test SSIM : 0.857562 | Time : 127.9145
+Best model saved with ssim 0.857562 at epoch 12
+Epoch 13 | Loss : 0.073118 | Time : 166.8664
+Epoch 13 | Test Loss : 0.008658 | Time : 126.9743
+Epoch 13 | Test PSNR : 22.505983 | Test SSIM : 0.835016 | Time : 126.9743
+Epoch 14 | Loss : 0.071410 | Time : 166.6390
+Epoch 14 | Test Loss : 0.004517 | Time : 127.4517
+Epoch 14 | Test PSNR : 24.592089 | Test SSIM : 0.863478 | Time : 127.4517
+Best model saved with ssim 0.863478 at epoch 14
+Epoch 15 | Loss : 0.070379 | Time : 167.2914
+Epoch 15 | Test Loss : 0.005824 | Time : 126.9176
+Epoch 15 | Test PSNR : 23.469770 | Test SSIM : 0.826085 | Time : 126.9176
+Epoch 16 | Loss : 0.068402 | Time : 166.8745
+Epoch 16 | Test Loss : 0.004196 | Time : 127.0578
+Epoch 16 | Test PSNR : 24.965743 | Test SSIM : 0.867346 | Time : 127.0578
+Best model saved with ssim 0.867346 at epoch 16
+Epoch 17 | Loss : 0.068132 | Time : 166.8733
+Epoch 17 | Test Loss : 0.004141 | Time : 127.6211
+Epoch 17 | Test PSNR : 25.088866 | Test SSIM : 0.853863 | Time : 127.6211
+Epoch 18 | Loss : 0.067505 | Time : 166.7726
+Epoch 18 | Test Loss : 0.007350 | Time : 126.8201
+Epoch 18 | Test PSNR : 22.718411 | Test SSIM : 0.830049 | Time : 126.8202
+Epoch 19 | Loss : 0.066242 | Time : 166.9362
+Epoch 19 | Test Loss : 0.009770 | Time : 128.1705
+Epoch 19 | Test PSNR : 22.146786 | Test SSIM : 0.810659 | Time : 128.1705
+Epoch 20 | Loss : 0.065691 | Time : 166.6754
+Epoch 20 | Test Loss : 0.004512 | Time : 126.2954
+Epoch 20 | Test PSNR : 24.837619 | Test SSIM : 0.876340 | Time : 126.2955
+Best model saved with ssim 0.876340 at epoch 20
+Epoch 21 | Loss : 0.063294 | Time : 166.6440
+Epoch 21 | Test Loss : 0.004137 | Time : 128.3682
+Epoch 21 | Test PSNR : 25.071814 | Test SSIM : 0.865261 | Time : 128.3682
+Epoch 22 | Loss : 0.064482 | Time : 167.2112
+Epoch 22 | Test Loss : 0.004008 | Time : 126.6686
+Epoch 22 | Test PSNR : 25.348611 | Test SSIM : 0.868842 | Time : 126.6687
+Epoch 23 | Loss : 0.063456 | Time : 166.6438
+Epoch 23 | Test Loss : 0.003501 | Time : 127.8294
+Epoch 23 | Test PSNR : 25.935734 | Test SSIM : 0.881209 | Time : 127.8295
+Best model saved with ssim 0.881209 at epoch 23
+Epoch 24 | Loss : 0.064287 | Time : 166.8844
+Epoch 24 | Test Loss : 0.004656 | Time : 126.4683
+Epoch 24 | Test PSNR : 24.563046 | Test SSIM : 0.863016 | Time : 126.4683
+Epoch 25 | Loss : 0.063198 | Time : 166.6573
+Epoch 25 | Test Loss : 0.005067 | Time : 127.4672
+Epoch 25 | Test PSNR : 24.385533 | Test SSIM : 0.860544 | Time : 127.4672
+Epoch 26 | Loss : 0.062430 | Time : 166.9745
+Epoch 26 | Test Loss : 0.003434 | Time : 126.9539
+Epoch 26 | Test PSNR : 26.006536 | Test SSIM : 0.885314 | Time : 126.9539
+Best model saved with ssim 0.885314 at epoch 26
+Epoch 27 | Loss : 0.061653 | Time : 166.5994
+Epoch 27 | Test Loss : 0.010110 | Time : 127.0742
+Epoch 27 | Test PSNR : 22.144692 | Test SSIM : 0.839039 | Time : 127.0743
+Epoch 28 | Loss : 0.062840 | Time : 167.1156
+Epoch 28 | Test Loss : 0.003600 | Time : 127.7467
+Epoch 28 | Test PSNR : 25.736360 | Test SSIM : 0.881302 | Time : 127.7467
+Epoch 29 | Loss : 0.059899 | Time : 167.0277
+Epoch 29 | Test Loss : 0.003326 | Time : 126.2171
+Epoch 29 | Test PSNR : 26.174399 | Test SSIM : 0.882387 | Time : 126.2171
+Epoch 30 | Loss : 0.061977 | Time : 166.8596
+Epoch 30 | Test Loss : 0.003578 | Time : 127.8139
+Epoch 30 | Test PSNR : 25.889763 | Test SSIM : 0.883565 | Time : 127.8139
+Epoch 31 | Loss : 0.058505 | Time : 166.9395
+Epoch 31 | Test Loss : 0.003464 | Time : 126.4157
+Epoch 31 | Test PSNR : 25.896066 | Test SSIM : 0.876083 | Time : 126.4157
+Epoch 32 | Loss : 0.059144 | Time : 166.7272
+Epoch 32 | Test Loss : 0.003466 | Time : 127.5298
+Epoch 32 | Test PSNR : 25.970059 | Test SSIM : 0.878382 | Time : 127.5298
+Epoch 33 | Loss : 0.059665 | Time : 166.8454
+Epoch 33 | Test Loss : 0.004331 | Time : 126.2699
+Epoch 33 | Test PSNR : 25.142275 | Test SSIM : 0.882700 | Time : 126.2699
+Epoch 34 | Loss : 0.059512 | Time : 166.8848
+Epoch 34 | Test Loss : 0.003803 | Time : 127.9753
+Epoch 34 | Test PSNR : 25.539369 | Test SSIM : 0.881097 | Time : 127.9754
+Epoch 35 | Loss : 0.059570 | Time : 166.8566
+Epoch 35 | Test Loss : 0.003527 | Time : 126.8465
+Epoch 35 | Test PSNR : 25.816771 | Test SSIM : 0.885431 | Time : 126.8465
+Best model saved with ssim 0.885431 at epoch 35
+Epoch 36 | Loss : 0.058448 | Time : 166.8647
+Epoch 36 | Test Loss : 0.003219 | Time : 127.4444
+Epoch 36 | Test PSNR : 26.203105 | Test SSIM : 0.876655 | Time : 127.4444
+Epoch 37 | Loss : 0.059245 | Time : 167.0132
+Epoch 37 | Test Loss : 0.003206 | Time : 126.9008
+Epoch 37 | Test PSNR : 26.481495 | Test SSIM : 0.889825 | Time : 126.9008
+Best model saved with ssim 0.889825 at epoch 37
+Epoch 38 | Loss : 0.058301 | Time : 167.5352
+Epoch 38 | Test Loss : 0.003124 | Time : 126.8205
+Epoch 38 | Test PSNR : 26.432817 | Test SSIM : 0.892469 | Time : 126.8206
+Best model saved with ssim 0.892469 at epoch 38
+Epoch 39 | Loss : 0.057915 | Time : 166.9019
+Epoch 39 | Test Loss : 0.003479 | Time : 127.4414
+Epoch 39 | Test PSNR : 25.758240 | Test SSIM : 0.849392 | Time : 127.4415
+Epoch 40 | Loss : 0.058060 | Time : 166.8360
+Epoch 40 | Test Loss : 0.003059 | Time : 126.5011
+Epoch 40 | Test PSNR : 26.459450 | Test SSIM : 0.882834 | Time : 126.5012
+Epoch 41 | Loss : 0.057094 | Time : 166.9988
+Epoch 41 | Test Loss : 0.003086 | Time : 128.0036
+Epoch 41 | Test PSNR : 26.652590 | Test SSIM : 0.895602 | Time : 128.0037
+Best model saved with ssim 0.895602 at epoch 41
+Epoch 42 | Loss : 0.056325 | Time : 167.2629
+Epoch 42 | Test Loss : 0.003270 | Time : 125.8865
+Epoch 42 | Test PSNR : 26.081968 | Test SSIM : 0.875635 | Time : 125.8865
+Epoch 43 | Loss : 0.056257 | Time : 166.9902
+Epoch 43 | Test Loss : 0.003885 | Time : 127.5924
+Epoch 43 | Test PSNR : 25.705354 | Test SSIM : 0.884110 | Time : 127.5925
+Epoch 44 | Loss : 0.056616 | Time : 166.8779
+Epoch 44 | Test Loss : 0.003078 | Time : 125.7690
+Epoch 44 | Test PSNR : 26.426742 | Test SSIM : 0.883491 | Time : 125.7690
+Epoch 45 | Loss : 0.055825 | Time : 166.7720
+Epoch 45 | Test Loss : 0.003098 | Time : 127.7177
+Epoch 45 | Test PSNR : 26.424753 | Test SSIM : 0.889399 | Time : 127.7177
+Epoch 46 | Loss : 0.055270 | Time : 166.8140
+Epoch 46 | Test Loss : 0.003504 | Time : 126.4150
+Epoch 46 | Test PSNR : 25.919146 | Test SSIM : 0.888287 | Time : 126.4150
+Epoch 47 | Loss : 0.055710 | Time : 167.0140
+Epoch 47 | Test Loss : 0.003327 | Time : 127.3238
+Epoch 47 | Test PSNR : 26.092881 | Test SSIM : 0.886913 | Time : 127.3238
+Epoch 48 | Loss : 0.055488 | Time : 167.6424
+Epoch 48 | Test Loss : 0.003015 | Time : 127.0067
+Epoch 48 | Test PSNR : 26.476829 | Test SSIM : 0.879376 | Time : 127.0068
+Epoch 49 | Loss : 0.055832 | Time : 166.9084
+Epoch 49 | Test Loss : 0.003398 | Time : 126.6662
+Epoch 49 | Test PSNR : 25.906448 | Test SSIM : 0.886338 | Time : 126.6662
+Epoch 50 | Loss : 0.055513 | Time : 166.6711
+Epoch 50 | Test Loss : 0.003286 | Time : 127.7984
+Epoch 50 | Test PSNR : 26.286941 | Test SSIM : 0.892612 | Time : 127.7984
+Epoch 51 | Loss : 0.054406 | Time : 166.9797
+Epoch 51 | Test Loss : 0.002766 | Time : 126.5189
+Epoch 51 | Test PSNR : 27.088083 | Test SSIM : 0.899393 | Time : 126.5190
+Best model saved with ssim 0.899393 at epoch 51
+Epoch 52 | Loss : 0.054112 | Time : 166.6341
+Epoch 52 | Test Loss : 0.003110 | Time : 127.9663
+Epoch 52 | Test PSNR : 26.570445 | Test SSIM : 0.895077 | Time : 127.9664
+Epoch 53 | Loss : 0.053842 | Time : 166.9725
+Epoch 53 | Test Loss : 0.003112 | Time : 126.5080
+Epoch 53 | Test PSNR : 26.559209 | Test SSIM : 0.898215 | Time : 126.5080
+Epoch 54 | Loss : 0.055408 | Time : 166.8050
+Epoch 54 | Test Loss : 0.002914 | Time : 128.2327
+Epoch 54 | Test PSNR : 26.885894 | Test SSIM : 0.897194 | Time : 128.2327
+Epoch 55 | Loss : 0.054048 | Time : 166.8365
+Epoch 55 | Test Loss : 0.002762 | Time : 126.4547
+Epoch 55 | Test PSNR : 27.038286 | Test SSIM : 0.902295 | Time : 126.4547
+Best model saved with ssim 0.902295 at epoch 55
+Epoch 56 | Loss : 0.053382 | Time : 166.8173
+Epoch 56 | Test Loss : 0.002880 | Time : 127.9051
+Epoch 56 | Test PSNR : 26.612411 | Test SSIM : 0.874446 | Time : 127.9051
+Epoch 57 | Loss : 0.053616 | Time : 166.8155
+Epoch 57 | Test Loss : 0.002933 | Time : 127.3994
+Epoch 57 | Test PSNR : 26.797742 | Test SSIM : 0.897122 | Time : 127.3994
+Epoch 58 | Loss : 0.052905 | Time : 166.8399
+Epoch 58 | Test Loss : 0.002921 | Time : 127.2659
+Epoch 58 | Test PSNR : 26.628758 | Test SSIM : 0.891075 | Time : 127.2659
+Epoch 59 | Loss : 0.053549 | Time : 166.5847
+Epoch 59 | Test Loss : 0.002758 | Time : 127.2888
+Epoch 59 | Test PSNR : 27.064538 | Test SSIM : 0.902297 | Time : 127.2888
+Best model saved with ssim 0.902297 at epoch 59
+Epoch 60 | Loss : 0.052268 | Time : 166.7842
+Epoch 60 | Test Loss : 0.003028 | Time : 127.4318
+Epoch 60 | Test PSNR : 26.502537 | Test SSIM : 0.899522 | Time : 127.4318
+Epoch 61 | Loss : 0.052602 | Time : 167.3163
+Epoch 61 | Test Loss : 0.002776 | Time : 127.7291
+Epoch 61 | Test PSNR : 26.952520 | Test SSIM : 0.890316 | Time : 127.7291
+Epoch 62 | Loss : 0.052959 | Time : 166.7356
+Epoch 62 | Test Loss : 0.002834 | Time : 126.6343
+Epoch 62 | Test PSNR : 27.121592 | Test SSIM : 0.902239 | Time : 126.6343
+Epoch 63 | Loss : 0.052131 | Time : 166.8909
+Epoch 63 | Test Loss : 0.004936 | Time : 127.9888
+Epoch 63 | Test PSNR : 24.969560 | Test SSIM : 0.887706 | Time : 127.9888
+Epoch 64 | Loss : 0.052499 | Time : 166.6509
+Epoch 64 | Test Loss : 0.002742 | Time : 126.0734
+Epoch 64 | Test PSNR : 27.085945 | Test SSIM : 0.896709 | Time : 126.0734
+Epoch 65 | Loss : 0.052552 | Time : 166.9627
+Epoch 65 | Test Loss : 0.002759 | Time : 128.1308
+Epoch 65 | Test PSNR : 27.056781 | Test SSIM : 0.900594 | Time : 128.1308
+Epoch 66 | Loss : 0.050615 | Time : 166.8800
+Epoch 66 | Test Loss : 0.003182 | Time : 126.7718
+Epoch 66 | Test PSNR : 26.481662 | Test SSIM : 0.893221 | Time : 126.7719
+Epoch 67 | Loss : 0.051044 | Time : 166.8099
+Epoch 67 | Test Loss : 0.002670 | Time : 127.7071
+Epoch 67 | Test PSNR : 27.330583 | Test SSIM : 0.903878 | Time : 127.7072
+Best model saved with ssim 0.903878 at epoch 67
+Epoch 68 | Loss : 0.051297 | Time : 166.9065
+Epoch 68 | Test Loss : 0.003059 | Time : 126.8105
+Epoch 68 | Test PSNR : 26.553568 | Test SSIM : 0.891836 | Time : 126.8105
+Epoch 69 | Loss : 0.051470 | Time : 166.8017
+Epoch 69 | Test Loss : 0.002683 | Time : 126.1844
+Epoch 69 | Test PSNR : 27.237026 | Test SSIM : 0.900920 | Time : 126.1845
+Epoch 70 | Loss : 0.051589 | Time : 166.5163
+Epoch 70 | Test Loss : 0.003284 | Time : 126.2874
+Epoch 70 | Test PSNR : 25.834901 | Test SSIM : 0.845974 | Time : 126.2874
+Epoch 71 | Loss : 0.050976 | Time : 166.2862
+Epoch 71 | Test Loss : 0.002790 | Time : 126.2089
+Epoch 71 | Test PSNR : 26.882587 | Test SSIM : 0.900195 | Time : 126.2089
+Epoch 72 | Loss : 0.050520 | Time : 166.5101
+Epoch 72 | Test Loss : 0.002784 | Time : 125.8067
+Epoch 72 | Test PSNR : 26.926405 | Test SSIM : 0.894557 | Time : 125.8067
+Epoch 73 | Loss : 0.050729 | Time : 166.3656
+Epoch 73 | Test Loss : 0.002928 | Time : 125.7882
+Epoch 73 | Test PSNR : 26.659521 | Test SSIM : 0.901430 | Time : 125.7883
+Epoch 74 | Loss : 0.050305 | Time : 166.4199
+Epoch 74 | Test Loss : 0.002633 | Time : 125.7605
+Epoch 74 | Test PSNR : 27.287179 | Test SSIM : 0.904149 | Time : 125.7606
+Best model saved with ssim 0.904149 at epoch 74
+Epoch 75 | Loss : 0.049800 | Time : 166.3978
+Epoch 75 | Test Loss : 0.002714 | Time : 126.0582
+Epoch 75 | Test PSNR : 27.268281 | Test SSIM : 0.903204 | Time : 126.0582
+Epoch 76 | Loss : 0.050164 | Time : 166.4674
+Epoch 76 | Test Loss : 0.003085 | Time : 125.9846
+Epoch 76 | Test PSNR : 26.343965 | Test SSIM : 0.893187 | Time : 125.9847
+Epoch 77 | Loss : 0.049979 | Time : 166.4531
+Epoch 77 | Test Loss : 0.003097 | Time : 125.7524
+Epoch 77 | Test PSNR : 26.609253 | Test SSIM : 0.896062 | Time : 125.7524
+Epoch 78 | Loss : 0.050163 | Time : 166.6063
+Epoch 78 | Test Loss : 0.002769 | Time : 125.8339
+Epoch 78 | Test PSNR : 26.970630 | Test SSIM : 0.896458 | Time : 125.8339
+Epoch 79 | Loss : 0.048942 | Time : 166.4947
+Epoch 79 | Test Loss : 0.002608 | Time : 126.0379
+Epoch 79 | Test PSNR : 27.376921 | Test SSIM : 0.902725 | Time : 126.0379
+Epoch 80 | Loss : 0.048533 | Time : 166.3811
+Epoch 80 | Test Loss : 0.002651 | Time : 125.2761
+Epoch 80 | Test PSNR : 27.309557 | Test SSIM : 0.898119 | Time : 125.2761
+Epoch 81 | Loss : 0.048980 | Time : 167.5190
+Epoch 81 | Test Loss : 0.002864 | Time : 127.1073
+Epoch 81 | Test PSNR : 26.911236 | Test SSIM : 0.890090 | Time : 127.1073
+Epoch 82 | Loss : 0.049342 | Time : 167.3342
+Epoch 82 | Test Loss : 0.002636 | Time : 126.6897
+Epoch 82 | Test PSNR : 27.416355 | Test SSIM : 0.906491 | Time : 126.6897
+Best model saved with ssim 0.906491 at epoch 82
+Epoch 83 | Loss : 0.049158 | Time : 166.9018
+Epoch 83 | Test Loss : 0.003149 | Time : 126.9379
+Epoch 83 | Test PSNR : 26.248387 | Test SSIM : 0.903906 | Time : 126.9379
+Epoch 84 | Loss : 0.049293 | Time : 168.0497
+Epoch 84 | Test Loss : 0.002789 | Time : 127.0254
+Epoch 84 | Test PSNR : 27.036441 | Test SSIM : 0.901861 | Time : 127.0254
+Epoch 85 | Loss : 0.049014 | Time : 167.6148
+Epoch 85 | Test Loss : 0.002780 | Time : 127.0746
+Epoch 85 | Test PSNR : 26.886950 | Test SSIM : 0.898592 | Time : 127.0746
+Epoch 86 | Loss : 0.048906 | Time : 166.9854
+Epoch 86 | Test Loss : 0.003033 | Time : 127.0808
+Epoch 86 | Test PSNR : 26.539419 | Test SSIM : 0.907589 | Time : 127.0808
+Best model saved with ssim 0.907589 at epoch 86
+Epoch 87 | Loss : 0.048026 | Time : 167.7648
+Epoch 87 | Test Loss : 0.003328 | Time : 127.6283
+Epoch 87 | Test PSNR : 26.185017 | Test SSIM : 0.875814 | Time : 127.6283
+Epoch 88 | Loss : 0.047184 | Time : 167.9212
+Epoch 88 | Test Loss : 0.002959 | Time : 127.1622
+Epoch 88 | Test PSNR : 26.915327 | Test SSIM : 0.906861 | Time : 127.1622
+Epoch 89 | Loss : 0.047745 | Time : 166.9099
+Epoch 89 | Test Loss : 0.002646 | Time : 126.9630
+Epoch 89 | Test PSNR : 27.480393 | Test SSIM : 0.907566 | Time : 126.9631
+Epoch 90 | Loss : 0.048465 | Time : 167.6053
+Epoch 90 | Test Loss : 0.002634 | Time : 126.7288
+Epoch 90 | Test PSNR : 27.314903 | Test SSIM : 0.908317 | Time : 126.7288
+Best model saved with ssim 0.908317 at epoch 90
+Epoch 91 | Loss : 0.047517 | Time : 167.9012
+Epoch 91 | Test Loss : 0.003035 | Time : 127.1759
+Epoch 91 | Test PSNR : 26.547153 | Test SSIM : 0.877729 | Time : 127.1760
+Epoch 92 | Loss : 0.047758 | Time : 166.9280
+Epoch 92 | Test Loss : 0.002987 | Time : 126.6801
+Epoch 92 | Test PSNR : 26.695508 | Test SSIM : 0.895153 | Time : 126.6801
+Epoch 93 | Loss : 0.047326 | Time : 167.3777
+Epoch 93 | Test Loss : 0.003125 | Time : 126.9438
+Epoch 93 | Test PSNR : 26.452021 | Test SSIM : 0.899447 | Time : 126.9439
+Epoch 94 | Loss : 0.047146 | Time : 168.1000
+Epoch 94 | Test Loss : 0.002898 | Time : 127.0487
+Epoch 94 | Test PSNR : 26.794021 | Test SSIM : 0.907565 | Time : 127.0487
+Epoch 95 | Loss : 0.047350 | Time : 167.1730
+Epoch 95 | Test Loss : 0.002772 | Time : 126.9131
+Epoch 95 | Test PSNR : 27.140769 | Test SSIM : 0.895893 | Time : 126.9132
+Epoch 96 | Loss : 0.047192 | Time : 167.1738
+Epoch 96 | Test Loss : 0.002741 | Time : 127.5222
+Epoch 96 | Test PSNR : 27.115973 | Test SSIM : 0.896405 | Time : 127.5222
+Epoch 97 | Loss : 0.046665 | Time : 168.0453
+Epoch 97 | Test Loss : 0.002633 | Time : 127.6323
+Epoch 97 | Test PSNR : 27.264990 | Test SSIM : 0.896903 | Time : 127.6323
+Epoch 98 | Loss : 0.047024 | Time : 167.3741
+Epoch 98 | Test Loss : 0.002877 | Time : 126.7849
+Epoch 98 | Test PSNR : 26.963765 | Test SSIM : 0.901027 | Time : 126.7849
+Epoch 99 | Loss : 0.047982 | Time : 167.0138
+Epoch 99 | Test Loss : 0.002772 | Time : 127.3022
+Epoch 99 | Test PSNR : 27.057943 | Test SSIM : 0.900660 | Time : 127.3022
+Epoch 100 | Loss : 0.046723 | Time : 167.9208
+Epoch 100 | Test Loss : 0.002911 | Time : 127.4426
+Epoch 100 | Test PSNR : 26.656272 | Test SSIM : 0.903273 | Time : 127.4426
+===Final Evaluation===
+Best Epoch 90 | MSE : 43.155316 | MAE : 431.662832 | PSNR : 27.314903 | SSIM : 0.908317

@@ -1,0 +1,147 @@
+DATCSTP(
+  (pe): PatchEmbed_CNN3D(
+    (net): Sequential(
+      (0): Conv3d(1, 64, kernel_size=(3, 3, 3), stride=(2, 2, 2), padding=(1, 1, 1), bias=False)
+      (1): GELU(approximate='none')
+      (2): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (3): Conv3d(64, 64, kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1), bias=False)
+      (4): GELU(approximate='none')
+      (5): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (6): Conv3d(64, 128, kernel_size=(1, 1, 1), stride=(1, 1, 1), bias=False)
+    )
+  )
+  (net): ModuleList(
+    (0-7): 8 x Block(
+      (drop_path): Identity()
+      (satt): Attention(
+        (norm): LayerNorm()
+        (att): Sequential(
+          (0): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+          (1): GELU(approximate='none')
+          (2): Conv2d(128, 128, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=128)
+        )
+        (v): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+        (proj): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (tatt): Attention(
+        (norm): LayerNorm()
+        (att): Sequential(
+          (0): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+          (1): GELU(approximate='none')
+          (2): Conv2d(640, 640, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=640)
+        )
+        (v): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+        (proj): Conv2d(640, 640, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (mlp): Mlp(
+        (norm): LayerNorm()
+        (fc1): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1))
+        (pos): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=256)
+        (fc2): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+        (act): GELU(approximate='none')
+      )
+    )
+  )
+  (pb): PatchEmbed_CNN3D(
+    (net): Sequential(
+      (0): ConvTranspose3d(128, 64, kernel_size=(1, 1, 1), stride=(1, 1, 1), bias=False)
+      (1): GELU(approximate='none')
+      (2): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (3): Conv3d(64, 64, kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1), bias=False)
+      (4): GELU(approximate='none')
+      (5): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (6): ConvTranspose3d(64, 1, kernel_size=(3, 3, 3), stride=(2, 2, 2), padding=(1, 1, 1), output_padding=(1, 1, 1), bias=False)
+    )
+  )
+)
+| module             | #parameters or shape   | #flops    |
+|:-------------------|:-----------------------|:----------|
+| model              | 11.36M                 | 16.613G   |
+|  pe.net            |  0.121M                |  0.62G    |
+|   pe.net.0         |   1.728K               |   8.847M  |
+|    pe.net.0.weight |    (64, 1, 3, 3, 3)    |           |
+|   pe.net.2         |   0.128K               |   1.638M  |
+|    pe.net.2.weight |    (64,)               |           |
+|    pe.net.2.bias   |    (64,)               |           |
+|   pe.net.3         |   0.111M               |   0.566G  |
+|    pe.net.3.weight |    (64, 64, 3, 3, 3)   |           |
+|   pe.net.5         |   0.128K               |   1.638M  |
+|    pe.net.5.weight |    (64,)               |           |
+|    pe.net.5.bias   |    (64,)               |           |
+|   pe.net.6         |   8.192K               |   41.943M |
+|    pe.net.6.weight |    (128, 64, 1, 1, 1)  |           |
+|  net               |  11.119M               |  15.372G  |
+|   net.0            |   1.39M                |   1.922G  |
+|    net.0.scale1    |    (128,)              |           |
+|    net.0.scale2    |    (640,)              |           |
+|    net.0.scale3    |    (128,)              |           |
+|    net.0.satt      |    56.192K             |    0.284G |
+|    net.0.tatt      |    1.264M              |    1.29G  |
+|    net.0.mlp       |    68.736K             |    0.347G |
+|   net.1            |   1.39M                |   1.922G  |
+|    net.1.scale1    |    (128,)              |           |
+|    net.1.scale2    |    (640,)              |           |
+|    net.1.scale3    |    (128,)              |           |
+|    net.1.satt      |    56.192K             |    0.284G |
+|    net.1.tatt      |    1.264M              |    1.29G  |
+|    net.1.mlp       |    68.736K             |    0.347G |
+|   net.2            |   1.39M                |   1.922G  |
+|    net.2.scale1    |    (128,)              |           |
+|    net.2.scale2    |    (640,)              |           |
+|    net.2.scale3    |    (128,)              |           |
+|    net.2.satt      |    56.192K             |    0.284G |
+|    net.2.tatt      |    1.264M              |    1.29G  |
+|    net.2.mlp       |    68.736K             |    0.347G |
+|   net.3            |   1.39M                |   1.922G  |
+|    net.3.scale1    |    (128,)              |           |
+|    net.3.scale2    |    (640,)              |           |
+|    net.3.scale3    |    (128,)              |           |
+|    net.3.satt      |    56.192K             |    0.284G |
+|    net.3.tatt      |    1.264M              |    1.29G  |
+|    net.3.mlp       |    68.736K             |    0.347G |
+|   net.4            |   1.39M                |   1.922G  |
+|    net.4.scale1    |    (128,)              |           |
+|    net.4.scale2    |    (640,)              |           |
+|    net.4.scale3    |    (128,)              |           |
+|    net.4.satt      |    56.192K             |    0.284G |
+|    net.4.tatt      |    1.264M              |    1.29G  |
+|    net.4.mlp       |    68.736K             |    0.347G |
+|   net.5            |   1.39M                |   1.922G  |
+|    net.5.scale1    |    (128,)              |           |
+|    net.5.scale2    |    (640,)              |           |
+|    net.5.scale3    |    (128,)              |           |
+|    net.5.satt      |    56.192K             |    0.284G |
+|    net.5.tatt      |    1.264M              |    1.29G  |
+|    net.5.mlp       |    68.736K             |    0.347G |
+|   net.6            |   1.39M                |   1.922G  |
+|    net.6.scale1    |    (128,)              |           |
+|    net.6.scale2    |    (640,)              |           |
+|    net.6.scale3    |    (128,)              |           |
+|    net.6.satt      |    56.192K             |    0.284G |
+|    net.6.tatt      |    1.264M              |    1.29G  |
+|    net.6.mlp       |    68.736K             |    0.347G |
+|   net.7            |   1.39M                |   1.922G  |
+|    net.7.scale1    |    (128,)              |           |
+|    net.7.scale2    |    (640,)              |           |
+|    net.7.scale3    |    (128,)              |           |
+|    net.7.satt      |    56.192K             |    0.284G |
+|    net.7.tatt      |    1.264M              |    1.29G  |
+|    net.7.mlp       |    68.736K             |    0.347G |
+|  pb.net            |  0.121M                |  0.62G    |
+|   pb.net.0         |   8.192K               |   41.943M |
+|    pb.net.0.weight |    (128, 64, 1, 1, 1)  |           |
+|   pb.net.2         |   0.128K               |   1.638M  |
+|    pb.net.2.weight |    (64,)               |           |
+|    pb.net.2.bias   |    (64,)               |           |
+|   pb.net.3         |   0.111M               |   0.566G  |
+|    pb.net.3.weight |    (64, 64, 3, 3, 3)   |           |
+|   pb.net.5         |   0.128K               |   1.638M  |
+|    pb.net.5.weight |    (64,)               |           |
+|    pb.net.5.bias   |    (64,)               |           |
+|   pb.net.6         |   1.728K               |   8.847M  |
+|    pb.net.6.weight |    (64, 1, 3, 3, 3)    |           |
+model params: 11360128
+model gflops: 16.61272064
+===Final Evaluation===
+Inference Done | Time: 121.4248
+MSE: 14.438486 | MAE: 45.268944 | PSNR: 26.357731 | SSIM: 0.970207 | Time: 121.4248
