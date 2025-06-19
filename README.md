@@ -1,5 +1,8 @@
-## Installation
+# DATC-STP: Towards Accurate yet Efficient Spatiotemporal Prediction with Transformer-style CNN
+![image]() <br>
+An implementation of "DATC-STP: Towards Accurate yet Efficient Spatiotemporal Prediction with Transformer-style CNN" **[[Paper](https://doi.org/10.1109/ACCESS.2025.3573639)]**<br>
 
+## Installation
 ```shell
 # for fast start
 pip install -r requirements.txt
