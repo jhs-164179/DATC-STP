@@ -58,3 +58,17 @@ bash test_taxibj.sh
 bash test_kth.sh
 ```
 
+## Citation
+
+```
+@ARTICLE{11015442,
+  author={Jin, Hyeonseok and Kim, Kyungbaek},
+  journal={IEEE Access}, 
+  title={DATC-STP: Towards Accurate yet Efficient Spatiotemporal Prediction with Transformer-style CNN}, 
+  year={2025},
+  volume={},
+  number={},
+  pages={1-1},
+  keywords={Spatiotemporal phenomena;Computer architecture;Accuracy;Transformers;Feature extraction;Convolutional neural networks;Correlation;Long short term memory;Three-dimensional displays;Kernel;Spatiotemporal prediction;multi-in-multi-out;convolutional neural network;vision transformer;deep learning},
+  doi={10.1109/ACCESS.2025.3573639}}
+```
